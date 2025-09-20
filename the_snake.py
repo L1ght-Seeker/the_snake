@@ -1,5 +1,6 @@
-import pygame
 from random import randint
+
+import pygame
 
 # Размеры экрана и сетка
 SCREEN_WIDTH, SCREEN_HEIGHT = 640, 480
@@ -179,5 +180,5 @@ def main():
     pygame.quit()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
