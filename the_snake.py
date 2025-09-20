@@ -167,11 +167,7 @@ def main():
                 running = False
 
         handle_keys(snake)
-        try:
-            snake.move()
-        except SelfCollisionError as e:
-            print(f'Ошибка: {e}')
-            break
+        snake.move()
 
         # Проверка попадания в яблоко
         if snake.get_head_position() == apple.position:
