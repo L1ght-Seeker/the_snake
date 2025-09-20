@@ -33,6 +33,13 @@ pygame.display.set_caption('Змейка')
 clock = pygame.time.Clock()
 
 
+# Специальное исключение для столкновения с телом змеи
+class SelfCollisionError(Exception):
+    """собственное исключение"""
+
+    pass
+
+
 # Базовый класс игровых объектов
 class GameObject:
     """Базовый класс для игровых объектов."""
@@ -107,7 +114,7 @@ class Snake(GameObject):
 
         # Проверка столкновения с телом змеи
         if self.positions.count(self.get_head_position()) > 1:
-            raise Exception('Неееет..Ты сожрал сам себя :(')
+            raise SelfCollisionError('Неееет..Ты сожрал сам себя :(')
 
     def draw(self):
         """Отрисовывает змею на экране."""
@@ -162,7 +169,7 @@ def main():
         handle_keys(snake)
         try:
             snake.move()
-        except Exception as e:
+        except SelfCollisionError as e:
             print(f'Ошибка: {e}')
             break
 
@@ -182,4 +189,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-# ...
