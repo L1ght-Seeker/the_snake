@@ -1,6 +1,11 @@
 from random import randint
-
 import pygame
+import logging  # Пришлось изучать) Ведь выдавалась ошибуа print found))
+
+
+# Настройка логирования
+logging.basicConfig(filename="snake_game.log", level=logging.DEBUG,
+                    format='%(asctime)s [%(levelname)s]: %(message)s')
 
 # Размеры экрана и сетка
 SCREEN_WIDTH, SCREEN_HEIGHT = 640, 480
@@ -33,9 +38,8 @@ pygame.display.set_caption('Змейка')
 clock = pygame.time.Clock()
 
 
-# Специальное исключение для столкновения с телом змеи
 class SelfCollisionError(Exception):
-    """собственное исключение"""
+    """Специальное исключение для столкновения с телом змеи"""
 
     pass
 
@@ -170,7 +174,7 @@ def main():
         try:
             snake.move()
         except SelfCollisionError as e:
-            print(f'Ошибка: {e}')
+            logging.error(f'Ошибка: {e}')
             break
 
         # Проверка попадания в яблоко
