@@ -16,8 +16,8 @@ RIGHT = (1, 0)
 
 # Цвета
 BOARD_BACKGROUND_COLOR = (0, 0, 0)
-SNAKE_COLOR = (0, 255, 0)
-APPLE_COLOR = (255, 0, 0)
+SNAKE_BODY_COLOR = (0, 255, 0)
+APPLE_BODY_COLOR = (255, 0, 0)
 BORDER_COLOR = (93, 216, 228)
 
 # Задержка (скорость игры)
@@ -37,10 +37,10 @@ clock = pg.time.Clock()
 class GameObject:
     """Базовый класс для игровых объектов."""
 
-    def __init__(self, color=None):
+    def __init__(self, body_color=None):
         """Инициализирует игровые объекты."""
         self.position = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
-        self.color = color or BOARD_BACKGROUND_COLOR
+        self.body_color = body_color or BOARD_BACKGROUND_COLOR
 
     def draw(self):
         """Отрисовывает объект на экране."""
@@ -51,9 +51,11 @@ class GameObject:
 class Apple(GameObject):
     """Представляет яблоко на игровом поле."""
 
-    def __init__(self, occupied_positions=[]):
+    def __init__(self, occupied_positions=None):
         """Инициализирует яблоко и ставит его на случайную позицию."""
-        super().__init__(color=APPLE_COLOR)
+        if occupied_positions is None:
+            occupied_positions = []
+        super().__init__(body_color=APPLE_BODY_COLOR)
         self.randomize_position(occupied_positions)
 
     def randomize_position(self, occupied_positions):
@@ -70,7 +72,7 @@ class Apple(GameObject):
     def draw(self):
         """Отрисовывает яблоко на экране."""
         apple_rect = pg.Rect(self.position, (GRID_SIZE, GRID_SIZE))
-        pg.draw.rect(screen, self.color, apple_rect)
+        pg.draw.rect(screen, self.body_color, apple_rect)
         pg.draw.rect(screen, BORDER_COLOR, apple_rect, 1)
 
 
@@ -80,7 +82,7 @@ class Snake(GameObject):
 
     def __init__(self):
         """Инициализирует змею и задаёт начальные параметры."""
-        super().__init__(color=SNAKE_COLOR)
+        super().__init__(body_color=SNAKE_BODY_COLOR)
         self.reset()
 
     def reset(self):
@@ -110,7 +112,7 @@ class Snake(GameObject):
         """Отрисовывает змею на экране."""
         for pos in self.positions:
             segment_rect = pg.Rect(pos, (GRID_SIZE, GRID_SIZE))
-            pg.draw.rect(screen, self.color, segment_rect)
+            pg.draw.rect(screen, self.body_color, segment_rect)
             pg.draw.rect(screen, BORDER_COLOR, segment_rect, 1)
         if self.last is not None:
             last_rect = pg.Rect(self.last, (GRID_SIZE, GRID_SIZE))
@@ -128,7 +130,7 @@ class Snake(GameObject):
 
 
 # Вспомогательная функция для обработки событий клавиатуры
-def handle_key_events(event, snake):
+def handle_keys(event, snake):
     """Обрабатывает нажатия клавиш."""
     if event.type == pg.KEYDOWN:
         if event.key == pg.K_UP:
@@ -150,7 +152,7 @@ def main():
     while True:
         clock.tick(SPEED)
         for event in pg.event.get():
-            handle_key_events(event, snake)
+            handle_keys(event, snake)
 
         snake.move()
 
@@ -161,7 +163,6 @@ def main():
 
         # Логика проверки столкновений
         if snake.get_head_position() in snake.positions[1:]:
-            print("Игра закончена!")
             break
 
         # Частичная отрисовка
