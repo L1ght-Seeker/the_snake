@@ -129,7 +129,7 @@ class Snake(GameObject):
 def handle_keys(event, snake):
     """Обрабатывает нажатия клавиш."""
     if event.type == pg.KEYDOWN:
-        if event.key == pg.K_ESCAPE:  # Обработка клавиши ESC!!!!! ура-ура :3
+        if event.key == pg.K_ESCAPE:  # Обработка клавиши ESC!!!! ура-ура :3
             pg.quit()
             quit()
         elif event.key == pg.K_UP:
@@ -179,4 +179,4 @@ if __name__ == '__main__':
     # P.S На ты не против, забыл сказать)
     # Мне нравится как ты всё объясняешь)
     # Желаю хорошего дня!
-    # Выход на Esc
+    # Выход на Esc)
