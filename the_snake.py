@@ -1,4 +1,4 @@
-from random import choice, randint
+from random import randint
 
 import pygame as pg
 
@@ -16,12 +16,12 @@ RIGHT = (1, 0)
 
 # Цвета
 BOARD_BACKGROUND_COLOR = (0, 0, 0)
-SNAKE_BODY_COLOR = (0, 255, 0)
+SNAKE_BODY_COLOR = (0, 250, 0)
 APPLE_BODY_COLOR = (255, 0, 0)
 BORDER_COLOR = (93, 216, 228)
 
-# Задержка (скорость игры)
-SPEED = 8
+# Скорость игры
+SPEED = 10
 
 # Настройка игрового окна
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
@@ -44,7 +44,6 @@ class GameObject:
 
     def draw(self):
         """Отрисовывает объект на экране."""
-        pass
 
 
 # Класс Apple
@@ -53,21 +52,18 @@ class Apple(GameObject):
 
     def __init__(self, occupied_positions=None):
         """Инициализирует яблоко и ставит его на случайную позицию."""
-        if occupied_positions is None:
-            occupied_positions = []
         super().__init__(body_color=APPLE_BODY_COLOR)
-        self.randomize_position(occupied_positions)
+        self.randomize_position(occupied_positions or [])
 
     def randomize_position(self, occupied_positions):
         """Устанавливает случайную позицию яблока."""
         while True:
-            position = (
+            self.position = (
                 randint(0, GRID_WIDTH - 1) * GRID_SIZE,
                 randint(0, GRID_HEIGHT - 1) * GRID_SIZE
             )
-            if position not in occupied_positions:
+            if self.position not in occupied_positions:
                 break
-        self.position = position
 
     def draw(self):
         """Отрисовывает яблоко на экране."""
@@ -84,13 +80,12 @@ class Snake(GameObject):
         """Инициализирует змею и задаёт начальные параметры."""
         super().__init__(body_color=SNAKE_BODY_COLOR)
         self.reset()
+        self.direction = RIGHT  # Начальное направление вон туда 👉
 
     def reset(self):
         """Восстанавливает изначальное состояние змеи."""
-        center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
-        self.positions = [center]
+        self.positions = [(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)]
         self.length = 1
-        self.direction = choice([UP, DOWN, LEFT, RIGHT])
         self.last = None
 
     def get_head_position(self):
@@ -101,9 +96,11 @@ class Snake(GameObject):
         """Производит перемещение змеи."""
         head_x, head_y = self.get_head_position()
         dir_x, dir_y = self.direction
-        next_x = (head_x + dir_x * GRID_SIZE) % SCREEN_WIDTH
-        next_y = (head_y + dir_y * GRID_SIZE) % SCREEN_HEIGHT
-        self.positions.insert(0, (next_x, next_y))
+        self.positions.insert(
+            0,
+            ((head_x + dir_x * GRID_SIZE) % SCREEN_WIDTH,
+             (head_y + dir_y * GRID_SIZE) % SCREEN_HEIGHT),
+        )
         self.last = (
             self.positions.pop() if len(self.positions) > self.length else None
         )
@@ -129,11 +126,13 @@ class Snake(GameObject):
             self.direction = new_dir
 
 
-# Вспомогательная функция для обработки событий клавиатуры
 def handle_keys(event, snake):
     """Обрабатывает нажатия клавиш."""
     if event.type == pg.KEYDOWN:
-        if event.key == pg.K_UP:
+        if event.key == pg.K_ESCAPE:  # Обработка клавиши ESC!!!!! ура-ура :3
+            pg.quit()
+            quit()
+        elif event.key == pg.K_UP:
             snake.update_direction(UP)
         elif event.key == pg.K_DOWN:
             snake.update_direction(DOWN)
@@ -150,6 +149,8 @@ def main():
     apple = Apple(snake.positions)
 
     while True:
+        screen.fill(BOARD_BACKGROUND_COLOR)
+
         clock.tick(SPEED)
         for event in pg.event.get():
             handle_keys(event, snake)
@@ -161,17 +162,21 @@ def main():
             snake.length += 1
             apple.randomize_position(snake.positions)
 
-        # Логика проверки столкновений
+        # Проверка столкновения с телом змеи
         if snake.get_head_position() in snake.positions[1:]:
-            break
+            snake.reset()
+            apple.randomize_position(snake.positions)
 
-        # Частичная отрисовка
+        # Отрисовка всех элементов
         snake.draw()
         apple.draw()
         pg.display.flip()
 
-    pg.quit()
-
 
 if __name__ == '__main__':
     main()
+
+    # P.S На ты не против, забыл сказать)
+    # Мне нравится как ты всё объясняешь)
+    # Желаю хорошего дня!
+    # Выход на Esc
