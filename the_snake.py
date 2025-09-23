@@ -1,4 +1,4 @@
-from random import randint
+from random import randint, choice
 
 import pygame as pg
 
@@ -80,13 +80,15 @@ class Snake(GameObject):
         """Инициализирует змею и задаёт начальные параметры."""
         super().__init__(body_color=SNAKE_BODY_COLOR)
         self.reset()
-        self.direction = RIGHT  # Начальное направление вон туда 👉
+        self.direction = RIGHT  # Начальное направление вправо
 
     def reset(self):
         """Восстанавливает изначальное состояние змеи."""
         self.positions = [(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)]
         self.length = 1
         self.last = None
+        possible_directions = [UP, DOWN, LEFT, RIGHT]
+        self.direction = choice(possible_directions)
 
     def get_head_position(self):
         """Возвращает позицию головы змеи."""
@@ -129,7 +131,7 @@ class Snake(GameObject):
 def handle_keys(event, snake):
     """Обрабатывает нажатия клавиш."""
     if event.type == pg.KEYDOWN:
-        if event.key == pg.K_ESCAPE:  # Обработка клавиши ESC!!!! ура-ура :3
+        if event.key == pg.K_ESCAPE:  # Обработка клавиши ESC
             pg.quit()
             quit()
         elif event.key == pg.K_UP:
@@ -149,8 +151,6 @@ def main():
     apple = Apple(snake.positions)
 
     while True:
-        screen.fill(BOARD_BACKGROUND_COLOR)
-
         clock.tick(SPEED)
         for event in pg.event.get():
             handle_keys(event, snake)
@@ -163,7 +163,8 @@ def main():
             apple.randomize_position(snake.positions)
 
         # Проверка столкновения с телом змеи
-        if snake.get_head_position() in snake.positions[1:]:
+        elif snake.get_head_position() in snake.positions[1:]:
+            screen.fill(BOARD_BACKGROUND_COLOR)
             snake.reset()
             apple.randomize_position(snake.positions)
 
@@ -176,7 +177,5 @@ def main():
 if __name__ == '__main__':
     main()
 
-    # P.S На ты не против, забыл сказать)
-    # Мне нравится как ты всё объясняешь)
     # Желаю хорошего дня!
-    # Выход на Esc)
+    # Выход на 'Esc'
